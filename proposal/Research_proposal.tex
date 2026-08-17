@@ -1,0 +1,193 @@
+\documentclass[11pt,letterpaper]{article}
+
+% ---------- Page layout ----------
+\usepackage[letterpaper,margin=0.85in,headheight=14pt]{geometry}
+\usepackage{setspace}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{newunicodechar}
+\newunicodechar{₹}{Rs.\,}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Global styling: black and white only ----------
+\definecolor{heading}{gray}{0}
+\setstretch{1.08}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist[itemize]{leftmargin=1.55em,itemsep=2pt,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.55em,itemsep=2pt,topsep=3pt,parsep=0pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{heading}}
+  {\thesection}
+  {0.6em}
+  {}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{heading}}
+  {\thesubsection}
+  {0.6em}
+  {}
+\titlespacing*{\subsection}{0pt}{9pt}{4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\small\thepage}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+
+% ---------- Title block ----------
+\begin{center}
+    {\LARGE\bfseries FinGuard AI: Real-Time Financial Fraud Detection System}\par
+    \vspace{5pt}
+    {\large\itshape Software Engineering Project Proposal}\par
+    \vspace{10pt}
+    {\normalsize Submitted by: Arnav Kathuria (1024030068) and Akshit Shandilya (1024030067)}\par
+    {\normalsize Department of Computer Engineering}\par
+    {\normalsize Thapar Institute of Engineering and Technology}\par
+    {\normalsize August 18, 2026}
+\end{center}
+
+\vspace{7pt}
+\hrule
+\vspace{5pt}
+
+\section{Higher-order Goal}
+This project aims to strengthen the integrity and resilience of digital financial systems by making fraud detection faster, more accurate, and fully explainable. Beyond the immediate engineering objective, it addresses a broader concern in financial technology: as transaction volumes and fraud sophistication grow, institutions need adaptive systems that regulators, analysts, and customers can trust and audit.
+
+\section{Introduction / Problem Statement}
+Financial institutions rely heavily on transaction-monitoring systems to catch fraud before funds are lost. Most legacy systems, however, are built around static, hand-written rule engines that compare each transaction against a fixed rulebook.
+
+This approach breaks down in predictable ways. Static rules cannot detect fraud patterns nobody has explicitly coded for, so novel schemes slip through until an analyst manually writes a new rule. Blunt thresholds treat every signal with equal weight, generating high false-positive rates that block legitimate customers as often as they catch fraudsters. Batch-style checks introduce detection lag, so fraud is frequently caught only after funds have already moved. Every flagged case still requires an analyst to manually piece together evidence, and the systems offer little to no explanation for why a transaction was blocked, which is increasingly a regulatory liability.
+
+FinGuard AI addresses this gap by combining deterministic rules with supervised and unsupervised machine learning and behavioral analysis in a single explainable, real-time scoring pipeline.
+
+\section{Objectives}
+\begin{itemize}
+    \item Build a real-time risk-scoring engine that evaluates each transaction as it occurs.
+    \item Combine deterministic rules with supervised (XGBoost) and unsupervised (Isolation Forest) models for hybrid fraud detection.
+    \item Generate explainable decisions using per-transaction feature attribution (SHAP) rather than opaque scores.
+    \item Automate evidence assembly for analyst investigation instead of fully manual case-building.
+    \item Support continuous model improvement through an analyst-feedback loop.
+\end{itemize}
+
+\newpage
+\section{Methodology / Solution Approach}
+
+\subsection{System Architecture and Pipeline}
+FinGuard AI layers deterministic rules, a supervised fraud model, unsupervised anomaly detection, behavioral analysis, and explainability into one continuous pipeline that carries each transaction from ingestion to decision:
+\begin{itemize}
+    \item Customer Frontend $\rightarrow$ API Gateway (JWT authentication + RBAC) $\rightarrow$ Transaction Service $\rightarrow$ Feature Extraction.
+    \item Parallel detection stage: a deterministic Rule Engine runs alongside a supervised XGBoost fraud model and an unsupervised Isolation Forest anomaly detector.
+    \item Risk Aggregation combines the three signals into a single Final Risk Score (0--100).
+    \item The scored transaction and its evidence are surfaced on an Analyst Dashboard for review.
+    \item Analyst decisions (confirmed fraud / false positive) are written back to a Decision Feedback Database, closing the loop for continuous retraining.
+\end{itemize}
+
+\subsection{Key Model Features}
+The scoring models draw on transaction amount, velocity (frequency of transactions in a time window), geography (location deviation from customer history), and device fingerprint (new or unrecognized device), among other behavioral signals.
+
+\subsection{Explainability}
+Every score is decomposed using SHAP (SHapley Additive exPlanations) contribution values, so each decision lists the specific features that drove it (for example: transaction amount, new device, unusual location, velocity, and account history) rather than a single unexplained number.
+
+\subsection{Tech Stack}
+\begin{itemize}
+    \item Backend services and API gateway with JWT-based authentication and role-based access control (RBAC).
+    \item Supervised learning: XGBoost for transaction-level fraud classification.
+    \item Unsupervised learning: Isolation Forest for behavioral anomaly detection.
+    \item Explainability library (SHAP) for per-decision feature attribution.
+    \item Relational/document store for transactions, scores, and the analyst decision-feedback log.
+\end{itemize}
+
+\newpage
+\section{Evaluation Criteria}
+Success is defined using measurable KPIs tied directly to the detection pipeline rather than subjective review:
+\begin{itemize}
+    \item \textbf{Fraud Recall:} proportion of actual fraud correctly flagged by the system.
+    \item \textbf{False Positive Rate:} proportion of legitimate transactions incorrectly flagged.
+    \item \textbf{Mean Time to Detect:} latency between transaction occurrence and risk score generation.
+    \item \textbf{Analyst Productivity:} change in average case-investigation time using the automated dashboard versus manual review.
+    \item \textbf{Fraud Loss Avoided:} estimated monetary value of fraud prevented during the evaluation window.
+\end{itemize}
+
+Worked example: for a sample transaction of ₹85,000 against a customer's normal range of ₹5,000--₹10,000, the pipeline produces a fraud probability of 91\% and a risk score of 87/100, driven primarily by transaction amount, an unrecognized device, and location deviation --- triggering a Hold + Alert decision with a full attribution breakdown attached.
+
+\section{Scalability}
+The platform is designed to scale in both a theoretical and a practical sense.
+\begin{itemize}
+    \item \textbf{Theoretical scalability:} the API gateway, transaction service, and detection stage are decoupled so each can scale independently under rising transaction volume.
+    \item \textbf{Practical deployability:} stateless service design, indexed queries for the analyst dashboard, and a feedback database that supports incremental retraining without pipeline downtime.
+\end{itemize}
+
+\section{Resources / Tooling}
+The project uses mature, freely available components so that effort concentrates on pipeline design, model quality, and explainability rather than infrastructure:
+\begin{itemize}
+    \item Backend framework for REST APIs and the transaction/scoring services.
+    \item XGBoost and scikit-learn (Isolation Forest) for the detection models.
+    \item SHAP for explainability.
+    \item A relational or document database for transactions, scores, and analyst feedback.
+    \item No external funding required; all resources are available through open-source libraries and existing university/cloud compute access.
+\end{itemize}
+
+\newpage
+\section{Project Scope and Deliverables}
+
+\subsection{Initial Deliverable}
+\begin{itemize}
+    \item Transaction ingestion API with JWT + RBAC gateway.
+    \item Rule engine and baseline XGBoost fraud model integrated into a single scoring call.
+    \item Risk aggregation producing a 0--100 final score.
+    \item Basic analyst dashboard displaying flagged transactions.
+\end{itemize}
+
+\subsection{Subsequent Deliverables}
+\begin{itemize}
+    \item Isolation Forest anomaly detector added to the parallel detection stage.
+    \item SHAP-based explainability attached to every score.
+    \item Decision feedback database and analyst-confirmed relabeling loop.
+    \item KPI reporting (recall, false-positive rate, mean time to detect, analyst productivity, fraud loss avoided).
+\end{itemize}
+
+\section{Risks and Mitigations}
+\begin{itemize}
+    \item \textbf{Class imbalance (fraud is rare):} mitigate with resampling/weighted loss during XGBoost training and validate primarily on recall and precision rather than raw accuracy.
+    \item \textbf{False positives blocking legitimate customers:} tune the risk-aggregation thresholds against the false-positive-rate KPI and keep a human-in-the-loop analyst review step.
+    \item \textbf{Explainability overhead:} cache SHAP computations where possible to keep scoring latency within real-time bounds.
+    \item \textbf{Data privacy:} minimize retained personally identifiable information and restrict dashboard access via RBAC.
+\end{itemize}
+
+\section{Timeline}
+\begin{center}
+\small
+\begin{tabular}{@{}L{0.18\linewidth} L{0.76\linewidth}@{}}
+\toprule
+\textbf{Phase} & \textbf{Focus} \\
+\midrule
+Weeks 1--2 & Requirements, API gateway (JWT + RBAC), transaction service scaffolding. \\
+Weeks 3--4 & Rule engine and baseline XGBoost fraud model; risk aggregation and 0--100 scoring. \\
+Weeks 5--7 & Isolation Forest anomaly detector; analyst dashboard; parallel detection integration. \\
+Weeks 8--9 & SHAP explainability layer; decision feedback database and retraining loop. \\
+Weeks 10--11 & KPI instrumentation, evaluation against fraud recall / false-positive / MTTD targets. \\
+Week 12 & Buffer week for fixes; final testing and report/demo preparation. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Summary}
+FinGuard AI turns fraud detection from a static, rule-bound process into an adaptive, explainable risk platform. It layers deterministic rules with supervised and unsupervised machine learning, attaches a SHAP-based explanation to every decision, and closes the loop through analyst feedback --- meeting the project's engineering objectives through measurable KPIs (fraud recall, false-positive rate, mean time to detect, analyst productivity, and fraud loss avoided) rather than subjective assessment.
+
+\end{document}
