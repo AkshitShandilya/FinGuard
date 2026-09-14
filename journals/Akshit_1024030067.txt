@@ -1,3 +1,15 @@
 
-#25/8/2026 - 1/9/26
-added the use-case diagram and restructured the file
+# FinGuard AI — Progress Journal
+
+## Week 1
+- Created the Use-Case Diagram.
+- Structured the project files and documentation.
+
+## Week 2
+- Created the Activity Diagram.
+- Prepared the Prototype Document.
+
+### Current Progress
+**Completed:** Week 2  
+**Next:** Begin actual project.
+

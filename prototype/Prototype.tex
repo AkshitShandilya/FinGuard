@@ -1,0 +1,266 @@
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=0.9in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\hypersetup{hidelinks}
+\setstretch{1.08}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small FinGuard AI}
+\rhead{\small Prototype Document}
+\cfoot{\small \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.5cm}
+
+{\Large\bfseries SOFTWARE ENGINEERING PROJECT\par}
+\vspace{0.8cm}
+{\Huge\bfseries FINGUARD AI\par}
+\vspace{0.25cm}
+{\Large Real-Time Financial Fraud Detection System\par}
+
+\vspace{0.9cm}
+\rule{0.75\textwidth}{0.6pt}\par
+\vspace{0.4cm}
+{\Large\bfseries PROTOTYPE DOCUMENT\par}
+\vspace{0.4cm}
+\rule{0.75\textwidth}{0.6pt}\par
+
+\vfill
+
+\begin{tabular}{rl}
+\textbf{Prepared by:} & Arnav Kathuria (1024030068)\\
+& Akshit Shandilya (1024030067)\\[0.2cm]
+\textbf{Department:} & Computer Engineering\\
+\textbf{Institution:} & Thapar Institute of Engineering and Technology\\[0.2cm]
+\textbf{Date:} & September 2026
+\end{tabular}
+
+\vfill
+\end{titlepage}
+
+\section{Prototype Overview}
+
+FinGuard AI is a real-time financial fraud detection system designed to evaluate transactions
+as they occur and produce an explainable risk decision. The prototype combines deterministic
+rules with supervised and unsupervised machine learning in a single scoring pipeline.
+
+The basic prototype flow is:
+
+\begin{center}
+\textbf{Transaction}
+$\rightarrow$
+\textbf{Authentication}
+$\rightarrow$
+\textbf{Validation}
+$\rightarrow$
+\textbf{Feature Extraction}
+$\rightarrow$
+\textbf{Fraud Detection}
+$\rightarrow$
+\textbf{Risk Score}
+$\rightarrow$
+\textbf{Decision}
+\end{center}
+
+The system is intended to reduce detection delay, improve fraud detection quality, reduce
+unnecessary false positives, and provide analysts with evidence explaining risky transactions.
+
+\section{Objectives}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item Evaluate transactions in real time.
+\item Combine a rule engine, XGBoost, and Isolation Forest for hybrid fraud detection.
+\item Produce a final risk score between 0 and 100.
+\item Provide SHAP-based explanations for model-driven decisions.
+\item Provide an analyst interface for reviewing flagged transactions.
+\item Record analyst decisions for future model improvement.
+\end{itemize}
+
+\section{Prototype Workflow}
+
+\subsection{Transaction Processing}
+
+A customer submits a payment or transfer through the application. The API gateway authenticates
+the request using JWT and applies role-based access control. The transaction service validates
+and logs the transaction before extracting the features required for fraud detection.
+
+The principal features include:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item Transaction amount
+\item Transaction velocity
+\item Geographic deviation from customer history
+\item Device fingerprint
+\item Other available behavioural signals
+\end{itemize}
+
+\subsection{Fraud Detection}
+
+The extracted features are evaluated by three detection components:
+
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{>{\bfseries}p{0.27\textwidth}X}
+\toprule
+Component & Prototype role\\
+\midrule
+Rule Engine & Applies deterministic, hand-written fraud thresholds.\\
+XGBoost & Produces a supervised probability-of-fraud signal.\\
+Isolation Forest & Identifies unusual behavioural patterns and outliers.\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The outputs are combined by a risk aggregation layer to generate a final score from 0 to 100.
+
+\subsection{Risk Decision}
+
+\begin{center}
+\begin{tabular}{>{\bfseries}c c p{0.48\textwidth}}
+\toprule
+Risk tier & Score & Action\\
+\midrule
+Low & 0--30 & Approve transaction.\\
+Medium & 31--60 & Hold and request customer verification.\\
+High & 61--80 & Hold transaction and alert analyst.\\
+Critical & 81--100 & Block transaction and open investigation case.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Prototype Interfaces}
+
+\subsection{Customer Interface}
+
+The customer interface provides a simple transaction form containing the required transaction
+details. After submission, the system displays the resulting transaction status.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item Transaction amount and recipient details
+\item Submit transaction control
+\item Transaction status
+\item Verification message when additional confirmation is required
+\end{itemize}
+
+\subsection{Analyst Dashboard}
+
+The analyst dashboard displays flagged transactions and allows an analyst to open an individual
+case. A case contains:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item Transaction identifier and amount
+\item Final risk score and risk tier
+\item Rule, XGBoost, and anomaly signals
+\item Relevant transaction and behavioural features
+\item SHAP feature contributions
+\item Current case status
+\item Analyst decision
+\end{itemize}
+
+The analyst can record one of the following outcomes:
+
+\begin{center}
+\textbf{Confirm Fraud}
+\qquad
+\textbf{False Positive}
+\qquad
+\textbf{Escalate Case}
+\end{center}
+
+\section{Explainability and Feedback}
+
+SHAP is used to provide per-transaction feature attribution for model-driven decisions. Instead
+of displaying only a risk score, the prototype presents the features that contributed to the
+decision, such as transaction amount, device information, location deviation, velocity, and
+account history.
+
+Analyst decisions are stored in a decision feedback database. Confirmed fraud and false-positive
+outcomes can subsequently support relabelling and future model retraining.
+
+\begin{center}
+\textbf{Detection}
+$\rightarrow$
+\textbf{Analyst Review}
+$\rightarrow$
+\textbf{Verdict}
+$\rightarrow$
+\textbf{Feedback Database}
+$\rightarrow$
+\textbf{Future Retraining}
+\end{center}
+
+\section{Technology Stack}
+
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{>{\bfseries}p{0.30\textwidth}X}
+\toprule
+Layer & Proposed technology\\
+\midrule
+Authentication & JWT and role-based access control\\
+Backend & REST API and transaction/scoring services\\
+Supervised ML & XGBoost\\
+Unsupervised ML & Isolation Forest with scikit-learn\\
+Explainability & SHAP\\
+Database & Relational or document database\\
+Frontend & Web-based customer and analyst interfaces\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Evaluation}
+
+The prototype will be evaluated using the project's defined KPIs:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{Fraud Recall:} proportion of actual fraud correctly flagged.
+\item \textbf{False Positive Rate:} proportion of legitimate transactions incorrectly flagged.
+\item \textbf{Mean Time to Detect:} latency between transaction occurrence and risk-score generation.
+\item \textbf{Analyst Productivity:} change in average investigation time using the dashboard.
+\item \textbf{Fraud Loss Avoided:} estimated monetary value of prevented fraud.
+\end{itemize}
+
+\section{Prototype Deliverables}
+
+The prototype will provide:
+
+\begin{enumerate}[leftmargin=1.5em,itemsep=2pt]
+\item Transaction ingestion with JWT authentication and RBAC.
+\item Rule engine and baseline XGBoost fraud scoring.
+\item Risk aggregation with a 0--100 score.
+\item Isolation Forest anomaly detection.
+\item Basic analyst dashboard for flagged transactions.
+\item SHAP-based explanations.
+\item Analyst decision and feedback storage.
+\item KPI reporting for system evaluation.
+\end{enumerate}
+
+\section{Conclusion}
+
+The FinGuard AI prototype provides a concise implementation of the proposed fraud-detection
+lifecycle. It combines deterministic rules, supervised and unsupervised machine learning,
+risk aggregation, explainability, and analyst feedback into a single system. The prototype
+therefore provides the foundation for implementing and evaluating the complete FinGuard AI
+system.
+
+\end{document}
