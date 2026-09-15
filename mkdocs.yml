@@ -1,0 +1,71 @@
+site_name: FinGuard AI
+site_description: Real-Time Financial Fraud Detection System
+site_author: Arnav Kathuria & Akshit Shandilya
+
+theme:
+  name: material
+
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+  favicon: ""
+
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+
+  - Project:
+      - Overview: index.md
+      - Architecture: architecture.md
+      - Prototype: prototype.md
+
+  - Diagrams:
+      - Use-Case Diagram: diagrams/use-case.md
+      - Activity Diagram: diagrams/activity.md
+      - Flowchart: diagrams/flowchart.md
+
+  - Reports:
+      - Project Proposal: proposal.md
+      - Reports: reports.md
+
+  - Installation: installation.md
+
+  - Journals:
+      - Team Journal: journals/index.md
+      - Arnav Kathuria: journals/arnav.md
+      - Akshit Shandilya: journals/akshit.md
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: >
+  Copyright &copy; 2026 FinGuard AI Team
+
+repo_name: FinGuard
+repo_url: https://github.com/akshitshandilya/FinGuard
