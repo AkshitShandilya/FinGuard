@@ -1,0 +1,58 @@
+:root {
+  --finguard-yellow: #f5c400;
+  --finguard-dark: #111111;
+}
+
+/* Header */
+.md-header {
+  background-color: var(--finguard-dark);
+}
+
+/* Yellow navigation tabs */
+.md-tabs {
+  background-color: var(--finguard-dark);
+}
+
+/* Main links */
+.md-typeset a {
+  color: #b38f00;
+}
+
+/* Headings */
+.md-typeset h1,
+.md-typeset h2 {
+  font-weight: 700;
+}
+
+/* Code blocks */
+.md-typeset pre {
+  border-left: 4px solid var(--finguard-yellow);
+}
+
+/* Admonitions */
+.md-typeset .admonition,
+.md-typeset details {
+  border-left-color: var(--finguard-yellow);
+}
+
+/* Buttons */
+.md-button {
+  border-color: var(--finguard-yellow);
+}
+
+.md-button--primary {
+  background-color: var(--finguard-yellow);
+  border-color: var(--finguard-yellow);
+  color: #111111 !important;
+}
+
+/* Table headers */
+.md-typeset table:not([class]) th {
+  background-color: var(--finguard-dark);
+  color: white;
+}
+
+/* Hover */
+.md-nav__link:hover {
+  color: var(--finguard-yellow) !important;
+}
