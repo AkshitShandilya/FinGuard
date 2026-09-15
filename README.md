@@ -294,4 +294,4 @@ License
 This project is being developed as a Software Engineering academic project at Thapar Institute of Engineering and Technology.
 
 
-**This is the version I'd actually put on GitHub**—clean headings, proper navigation, architecture, tech stack, st
+
