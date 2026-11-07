@@ -1,0 +1,36 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+
+# Local database (created on first run)
+*.db
+
+# Old models saved by retraining (the live ones in artifacts/ stay committed)
+src/ml/artifacts/archive/
+
+# Frontend
+node_modules/
+dist/
+
+# MkDocs build output
+site/
+
+# LaTeX build files (the .tex and .pdf files stay committed)
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# OS and editor
+.DS_Store
+Thumbs.db

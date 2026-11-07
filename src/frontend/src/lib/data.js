@@ -1,0 +1,6 @@
+export const seedCases = [
+  { id: "FG-10432", owner: "R. Mehta", customer: "R. Mehta", amount: 85000, score: 87, prob: 91, tier: "critical", normal: "₹5,000 – ₹10,000", flags: ["New device", "Unusual location", "4 txns / 10 min", "High-value purchase"], shap: [["Amount", 32], ["New device", 21], ["Location", 18], ["Velocity", 12], ["History", 4]] },
+  { id: "FG-10431", owner: "S. Kaur", customer: "S. Kaur", amount: 61200, score: 74, prob: 68, tier: "high", normal: "₹8,000 – ₹15,000", flags: ["Unusual location", "Odd hour"], shap: [["Location", 24], ["Time of day", 19], ["Amount", 14], ["History", 6]] },
+  { id: "FG-10429", owner: "R. Mehta", customer: "R. Mehta", amount: 22500, score: 48, prob: 39, tier: "medium", normal: "₹3,000 – ₹9,000", flags: ["Above typical spend", "New merchant"], shap: [["Amount", 17], ["Merchant", 13], ["History", 5]] },
+  { id: "FG-10428", owner: "D. Verma", customer: "D. Verma", amount: 99999, score: 93, prob: 95, tier: "critical", normal: "₹10,000 – ₹40,000", flags: ["VPN detected", "New device", "Account age < 7 days"], shap: [["VPN", 28], ["Account age", 24], ["Amount", 20], ["New device", 11]] },
+];

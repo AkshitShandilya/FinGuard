@@ -1,0 +1,20 @@
+{
+  "numeric": [
+    "amount",
+    "transaction_hour",
+    "foreign_transaction",
+    "location_mismatch",
+    "device_trust_score",
+    "velocity_last_24h",
+    "cardholder_age"
+  ],
+  "categories": [
+    "Clothing",
+    "Electronics",
+    "Food",
+    "Grocery",
+    "Travel"
+  ],
+  "amount_p95": 530.21,
+  "amount_max": 1472.0
+}

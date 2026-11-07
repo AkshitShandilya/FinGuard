@@ -1,0 +1,98 @@
+{
+  "note": "Synthetic dataset. Metrics describe this dataset, not real-world performance.",
+  "rows": 10000,
+  "fraud_rows": 151,
+  "fraud_rate": 0.0151,
+  "test_rows": 2000,
+  "test_fraud_rows": 30,
+  "xgboost": {
+    "threshold_from_cv": 0.156,
+    "pr_auc": 1.0,
+    "roc_auc": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "cv_pr_auc_mean": 0.9975,
+    "cv_pr_auc_std": 0.0035
+  },
+  "rules_only_baseline": {
+    "precision": 0.2752,
+    "recall": 1.0
+  },
+  "isolation_forest_unsupervised_roc_auc": 0.9488,
+  "single_feature_auc": {
+    "amount": 0.513,
+    "transaction_hour": 0.825,
+    "foreign_transaction": 0.726,
+    "location_mismatch": 0.699,
+    "device_trust_score": 0.827,
+    "velocity_last_24h": 0.679,
+    "cardholder_age": 0.501
+  },
+  "stress_test": {
+    "label_noise": {
+      "0.0": {
+        "pr_auc": 1.0,
+        "pr_auc_std": 0.0,
+        "roc_auc": 1.0,
+        "roc_auc_std": 0.0
+      },
+      "0.1": {
+        "pr_auc": 0.9968,
+        "pr_auc_std": 0.0025,
+        "roc_auc": 0.9999,
+        "roc_auc_std": 0.0
+      },
+      "0.2": {
+        "pr_auc": 0.988,
+        "pr_auc_std": 0.0143,
+        "roc_auc": 0.9997,
+        "roc_auc_std": 0.0003
+      },
+      "0.3": {
+        "pr_auc": 0.9545,
+        "pr_auc_std": 0.024,
+        "roc_auc": 0.9989,
+        "roc_auc_std": 0.0006
+      },
+      "0.5": {
+        "pr_auc": 0.8294,
+        "pr_auc_std": 0.0655,
+        "roc_auc": 0.9937,
+        "roc_auc_std": 0.0029
+      }
+    },
+    "feature_noise": {
+      "0.0": {
+        "pr_auc": 1.0,
+        "pr_auc_std": 0.0,
+        "roc_auc": 1.0,
+        "roc_auc_std": 0.0
+      },
+      "0.1": {
+        "pr_auc": 0.6448,
+        "pr_auc_std": 0.0714,
+        "roc_auc": 0.9892,
+        "roc_auc_std": 0.0036
+      },
+      "0.2": {
+        "pr_auc": 0.4179,
+        "pr_auc_std": 0.0675,
+        "roc_auc": 0.9618,
+        "roc_auc_std": 0.0191
+      },
+      "0.3": {
+        "pr_auc": 0.2755,
+        "pr_auc_std": 0.0557,
+        "roc_auc": 0.9271,
+        "roc_auc_std": 0.0337
+      },
+      "0.5": {
+        "pr_auc": 0.133,
+        "pr_auc_std": 0.0199,
+        "roc_auc": 0.8587,
+        "roc_auc_std": 0.0135
+      }
+    },
+    "how_to_read": "label_noise: share of training fraud labels hidden, plus the same number of false alarms; scored on clean test labels. feature_noise: clean-trained model scored on blurred test transactions. 0.0 = no noise."
+  }
+}
