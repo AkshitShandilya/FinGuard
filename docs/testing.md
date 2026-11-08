@@ -21,6 +21,8 @@ Expect 30 passed. Two model tests are skipped until `python src/ml/train.py` has
 
 ## Test cases
 
+The full sheet, in the course template, is available as [Excel](test-cases/FinGuard_Test_Cases.xlsx) and [PDF](test-cases/FinGuard_Test_Cases.pdf). It lists the preconditions, test data, steps, expected and actual results for each case. The summary below matches it.
+
 | ID | Area | Scenario | Expected result |
 |---|---|---|---|
 | TC-01 | Scoring | Risk weights are added up | They sum to 1 |
