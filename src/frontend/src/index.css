@@ -58,3 +58,9 @@ input[type=range]{width:100%;accent-color:#fff}
 @media(max-width:860px){.cols,.tiers,.demo,.split{grid-template-columns:1fr}.nav nav{display:none}.stage{padding:40px 24px}.section{padding:80px 0}}
 .ctl select{width:100%;background:#161616;color:#f5f5f5;border:1px solid #333;border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit}
 .ctl.tight{margin-bottom:20px}
+.form{margin-top:32px;text-align:left}
+.form label{display:block;font-size:14px;color:var(--mu);margin:18px 0 8px}
+.form input{width:100%;background:#0d0d0d;border:1px solid #333;border-radius:12px;padding:14px 16px;color:#f5f5f5;font-size:17px;font-family:inherit}
+.form input:focus{outline:none;border-color:#fff}
+.form .btn{width:100%;margin-top:28px}
+.demo-hint{margin-top:28px;font-size:13px;color:var(--mu);line-height:1.7;text-align:left}

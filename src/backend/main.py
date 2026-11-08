@@ -1,26 +1,20 @@
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+import auth
 import db
-from detection import ml, retrain
 import simulate
+from detection import ml, retrain
 from detection.aggregator import aggregate
-from schemas import DecisionRequest, ScoreRequest, ScoreResponse
+from schemas import DecisionRequest, LoginRequest, ScoreRequest, ScoreResponse
 
 app = FastAPI(title="FinGuard AI")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+                   allow_methods=["*"], allow_headers=["*"])
 db.init()
 
-# Placeholder for JWT: the role arrives in a header. Swap for a verified token claim later.
-CAN_SCORE = {"analyst", "risk", "admin"}
-CAN_VIEW_CASES = {"analyst", "risk", "admin"}
-CAN_DECIDE = {"analyst"}
+STAFF = ("analyst", "risk", "admin")
 DECISIONS = {"Confirmed fraud", "False positive", "Escalated"}
-
-
-def need(role: str | None, allowed: set):
-    if role not in allowed:
-        raise HTTPException(403, "This role is not allowed to do that")
 
 
 @app.get("/health")
@@ -28,51 +22,54 @@ def health():
     return {"status": "ok"}
 
 
+@app.post("/auth/login")
+def login(body: LoginRequest):
+    user = auth.authenticate(body.username, body.password)
+    return {"token": auth.make_token(user), "role": user["role"], "name": user["name"]}
+
+
+@app.get("/auth/me")
+def me(user: dict = Depends(auth.current_user)):
+    return {"username": user["username"], "name": user["name"], "role": user["role"]}
+
+
 @app.post("/score", response_model=ScoreResponse)
-def score(req: ScoreRequest, x_role: str | None = Header(None)):
-    need(x_role, CAN_SCORE)
+def score(req: ScoreRequest, user: dict = Depends(auth.require(*STAFF))):
     return aggregate(req)
 
 
+@app.get("/meta")
+def meta(user: dict = Depends(auth.current_user)):
+    m = ml.meta()
+    return {"categories": m["categories"], "amount_max": m["amount_max"],
+            "amount_p95": m["amount_p95"], "trained": m.get("trained", False)}
+
+
 @app.get("/cases")
-def cases(status: str = "open", x_role: str | None = Header(None)):
-    need(x_role, CAN_VIEW_CASES)
+def cases(status: str = "open", user: dict = Depends(auth.require(*STAFF))):
     return db.list_cases(status)
 
 
+@app.get("/my-cases")
+def my_cases(user: dict = Depends(auth.require("customer"))):
+    return db.list_for_owner(user["name"])
+
+
 @app.post("/decision")
-def decision(body: DecisionRequest, x_role: str | None = Header(None)):
-    need(x_role, CAN_DECIDE)
+def decision(body: DecisionRequest, user: dict = Depends(auth.require("analyst"))):
     if body.decision not in DECISIONS:
         raise HTTPException(422, f"decision must be one of {sorted(DECISIONS)}")
-    result = db.decide(body.case_id, body.decision, x_role)
+    result = db.decide(body.case_id, body.decision, user["role"])
     if result == "missing":
         raise HTTPException(404, "Case not found")
     if result == "closed":
         raise HTTPException(409, "Case already decided")
-    return {"case_id": body.case_id, "decision": body.decision, "by": x_role}
+    return {"case_id": body.case_id, "decision": body.decision, "by": user["role"]}
 
 
 @app.get("/audit")
-def audit(x_role: str | None = Header(None)):
-    need(x_role, CAN_VIEW_CASES)
+def audit(user: dict = Depends(auth.require(*STAFF))):
     return db.list_audit()
-
-
-@app.get("/my-cases")
-def my_cases(x_role: str | None = Header(None), x_user: str | None = Header(None)):
-    need(x_role, {"customer"})
-    if not x_user:
-        raise HTTPException(400, "x-user header required")
-    return db.list_for_owner(x_user)  # placeholder: take the user from the JWT later
-
-
-@app.get("/meta")
-def meta(x_role: str | None = Header(None)):
-    need(x_role, CAN_SCORE | {"customer"})
-    m = ml.meta()
-    return {"categories": m["categories"], "amount_max": m["amount_max"],
-            "amount_p95": m["amount_p95"], "trained": m.get("trained", False)}
 
 
 def _flags(req):
@@ -87,11 +84,10 @@ def _flags(req):
 
 
 @app.post("/transactions")
-def pay(req: ScoreRequest, x_role: str | None = Header(None), x_user: str | None = Header(None)):
+def pay(req: ScoreRequest, customer: dict = Depends(auth.require("customer"))):
     """A customer payment: score it, store it, and open a case if it is High or Critical.
     The stored record gets its label later, from the analyst's decision."""
-    need(x_role, {"customer"})
-    user = x_user or "Customer"
+    user = customer["name"]
     r = aggregate(req)
     case_id = None
     if r["tier"] in ("High", "Critical"):
@@ -106,23 +102,20 @@ def pay(req: ScoreRequest, x_role: str | None = Header(None), x_user: str | None
 
 
 @app.get("/model")
-def model_info(x_role: str | None = Header(None)):
-    need(x_role, {"admin", "risk"})
+def model_info(user: dict = Depends(auth.require("admin", "risk"))):
     return {**db.model_stats(), "amount_p95": ml.meta()["amount_p95"],
             "trained": ml.meta().get("trained", False), "versions": db.list_versions()}
 
 
 @app.post("/retrain")
-def do_retrain(x_role: str | None = Header(None)):
-    need(x_role, {"admin"})
+def do_retrain(user: dict = Depends(auth.require("admin"))):
     res = retrain.retrain(db.labelled_records(), db.all_records())
     db.add_version(res)
     return res
 
 
 @app.post("/demo/new-pattern")
-def demo_new_pattern(x_role: str | None = Header(None)):
-    need(x_role, {"admin"})
+def demo_new_pattern(user: dict = Depends(auth.require("admin"))):
     rows = simulate.new_pattern()
     for f, label in rows:
         db.add_transaction("simulation", f, 0, "n/a", None, label)

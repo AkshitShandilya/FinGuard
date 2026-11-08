@@ -6,12 +6,12 @@ import Audit from "./Audit";
 import Pay from "./Pay";
 import Model from "./Model";
 
-export default function Console({ role, data, error, onDecide, onRefresh }) {
+export default function Console({ role, name, data, error, onDecide, onRefresh }) {
   const r = ROLES[role];
   const [tab, setTab] = useState(r.tabs[0]);
   return (
     <div className="con">
-      <div className="conhead"><div><h2>{r.label}</h2><p>{r.blurb}</p></div></div>
+      <div className="conhead"><div><h2>{r.label}</h2><p>{name} · {r.blurb}</p></div></div>
       {error && <div className="lock" style={{ marginBottom: 20 }}>{error}</div>}
       <div className="tabs">{r.tabs.map((t) => <button key={t} className={`tab ${tab === t ? "on" : ""}`} onClick={() => setTab(t)}>{TAB_LABELS[t]}</button>)}</div>
       {tab === "queue" && <Queue cases={data.cases} canDecide={r.decide} onDecide={onDecide} />}

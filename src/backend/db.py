@@ -12,6 +12,9 @@ SEED = [
     ("FG-10428", "D. Verma", "D. Verma", 99999, 93, 95, "critical", "₹10,000 – ₹40,000", ["VPN detected", "New device", "Account age < 7 days"], [["VPN", 28], ["Account age", 24], ["Amount", 20], ["New device", 11]]),
 ]
 
+DEMO_USERS = [("r.mehta", "R. Mehta", "customer"), ("analyst", "Neha Kapoor", "analyst"),
+              ("risk", "Karan Singh", "risk"), ("admin", "System Admin", "admin")]
+
 
 def conn():
     c = sqlite3.connect(DB)
@@ -32,6 +35,13 @@ def init():
         c.execute("""CREATE TABLE IF NOT EXISTS model_versions(
             id INTEGER PRIMARY KEY AUTOINCREMENT, trained_at TEXT, new_labels INT, new_frauds INT,
             champion REAL, challenger REAL, promoted INT, note TEXT)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS users(
+            username TEXT PRIMARY KEY, name TEXT, role TEXT, salt TEXT, pw_hash TEXT)""")
+        if c.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
+            import auth  # imported here because auth imports db
+            for username, name, role in DEMO_USERS:
+                salt, digest = auth.hash_password(auth.DEMO_PASSWORD)
+                c.execute("INSERT INTO users VALUES(?,?,?,?,?)", (username, name, role, salt, digest))
         if c.execute("SELECT COUNT(*) FROM cases").fetchone()[0] == 0:
             for r in SEED:
                 c.execute("INSERT INTO cases VALUES(?,?,?,?,?,?,?,?,?,?,'open')",
@@ -122,3 +132,9 @@ def add_version(res):
 def list_versions():
     with conn() as c:
         return [dict(r) for r in c.execute("SELECT * FROM model_versions ORDER BY id DESC LIMIT 10")]
+
+
+def get_user(username):
+    with conn() as c:
+        row = c.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+    return dict(row) if row else None

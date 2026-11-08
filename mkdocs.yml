@@ -1,71 +1,66 @@
 site_name: FinGuard AI
-site_description: Real-Time Financial Fraud Detection System
-site_author: Arnav Kathuria & Akshit Shandilya
+site_description: Real-time financial fraud detection that explains every decision
+site_author: Arnav Kathuria, Akshit Shandilya
+site_url: https://akshitshandilya.github.io/FinGuard/
+repo_url: https://github.com/AkshitShandilya/FinGuard
+repo_name: AkshitShandilya/FinGuard
+copyright: FinGuard AI. Department of Computer Engineering, TIET. Educational prototype.
 
 theme:
   name: material
-
-  features:
-    - navigation.tabs
-    - navigation.sections
-    - navigation.expand
-    - navigation.top
-    - search.suggest
-    - search.highlight
-    - content.code.copy
-
   font:
     text: Inter
-    code: JetBrains Mono
-
-  favicon: ""
-
+    code: IBM Plex Mono
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: amber
-      accent: amber
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: amber
-      accent: amber
+    - scheme: slate
+      primary: black
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
-
-nav:
-  - Home: index.md
-
-  - Project:
-      - Overview: index.md
-      - Architecture: architecture.md
-      - Prototype: prototype.md
-
-  - Diagrams:
-      - Use-Case Diagram: diagrams/use-case.md
-      - Activity Diagram: diagrams/activity.md
-      - Flowchart: diagrams/flowchart.md
-
-  - Reports:
-      - Project Proposal: proposal.md
-      - Reports: reports.md
-
-  - Installation: installation.md
-
-  - Journals:
-      - Team Journal: journals/index.md
-      - Arnav Kathuria: journals/arnav.md
-      - Akshit Shandilya: journals/akshit.md
+    - scheme: default
+      primary: black
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.instant
+    - navigation.footer
+    - search.highlight
+    - content.code.copy
+    - toc.follow
 
 extra_css:
   - stylesheets/extra.css
 
-copyright: >
-  Copyright &copy; 2026 FinGuard AI Team
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: false
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 
-repo_name: FinGuard
-repo_url: https://github.com/akshitshandilya/FinGuard
+nav:
+  - Home: index.md
+  - Design:
+      - Architecture: architecture.md
+      - Machine learning: model.md
+      - API reference: api.md
+      - Diagrams: diagrams.md
+  - Build:
+      - Installation: installation.md
+      - Prototype: prototype.md
+      - Testing: testing.md
+  - Reports: reports.md

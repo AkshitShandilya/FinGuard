@@ -6,19 +6,29 @@ import RiskScale from "./components/RiskScale";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Console from "./components/Console";
-import { api } from "./lib/api";
+import { api, getToken, setExpiredHandler, setToken } from "./lib/api";
 
 export default function App() {
   const [view, setView] = useState("site");
-  const [role, setRole] = useState(null);
+  const [session, setSession] = useState(null); // { role, name } from the server, never from the browser
+  const [booting, setBooting] = useState(!!getToken());
+  const [notice, setNotice] = useState(null);
   const [data, setData] = useState({ cases: [], audit: [], mine: [] });
   const [error, setError] = useState(null);
+  const role = session?.role;
+
+  useEffect(() => {
+    setExpiredHandler(() => { setSession(null); setNotice("Your session expired. Sign in again."); setView("login"); });
+    if (getToken()) {
+      api.me().then((u) => setSession({ role: u.role, name: u.name })).catch(() => {}).finally(() => setBooting(false));
+    }
+  }, []);
 
   const refresh = useCallback(async (r) => {
     try {
-      if (r === "customer") setData({ cases: [], audit: [], mine: await api.mine(r) });
+      if (r === "customer") setData({ cases: [], audit: [], mine: await api.mine() });
       else {
-        const [cases, audit] = await Promise.all([api.cases(r), api.audit(r)]);
+        const [cases, audit] = await Promise.all([api.cases(), api.audit()]);
         setData({ cases, audit, mine: [] });
       }
       setError(null);
@@ -27,17 +37,24 @@ export default function App() {
 
   useEffect(() => { if (role) refresh(role); }, [role, refresh]);
 
+  const login = async (username, password) => {
+    const d = await api.login(username, password);
+    setToken(d.token);
+    setNotice(null);
+    setSession({ role: d.role, name: d.name });
+  };
   const decide = async (c, label) => {
     try { await api.decide(role, c.id, label); await refresh(role); }
     catch (e) { setError(e.message); }
   };
-  const signOut = () => { setRole(null); setView("site"); setError(null); };
+  const signOut = () => { setToken(null); setSession(null); setView("site"); setError(null); };
 
+  if (booting) return null;
   return (
     <>
       <Nav session={role} go={setView} onSignOut={signOut} />
-      {role ? <Console key={role} role={role} data={data} error={error} onDecide={decide} onRefresh={() => refresh(role)} />
-        : view === "login" ? <Login onLogin={(r) => { setRole(r); setView("console"); }} />
+      {session ? <Console key={role} role={role} name={session.name} data={data} error={error} onDecide={decide} onRefresh={() => refresh(role)} />
+        : view === "login" ? <Login onLogin={login} notice={notice} />
         : <><Hero go={setView} /><Pipeline /><RiskScale /><Footer /></>}
     </>
   );

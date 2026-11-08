@@ -35,3 +35,8 @@ class ScoreResponse(BaseModel):
 class DecisionRequest(BaseModel):
     case_id: str
     decision: str  # Confirmed fraud | False positive | Escalated
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str

@@ -1,19 +1,13 @@
-# Reports
+# Reports and slides
 
-## Project Proposal
+| Stage | Report | Slides |
+|---|---|---|
+| Proposal | [Proposal report (PDF)](reports/Research_proposal.pdf) | Not available |
+| Prototype | [Prototype report (PDF)](reports/Prototype.pdf) | Not available |
+| Final | To be added | To be added |
 
-The complete project proposal describes the problem statement, objectives, methodology, architecture, evaluation criteria, scalability, resources, risks, and project timeline.
+## Project plan
 
-- [View Proposal PDF](../assets/Research_proposal.pdf)
+[Gantt chart (PDF)](gantt/gantt-chart.pdf)
 
-## Project Documentation
-
-Additional project documents and reports will be added here as development progresses.
-
-### Planned Documents
-
-- System Architecture
-- Software Requirements
-- Prototype Documentation
-- Testing Report
-- Final Project Report
+The LaTeX sources are in the repository next to each PDF.
